@@ -44,15 +44,15 @@ print(last_name[0].upper() + ". " + first_name.title())
 
 # Verkefni 7
 my_int = int(input('Give me an int >= 0: '))
-if my_int == 0:
-    bin_str = "0"
-else:
-    bin_str = ""
+bin_str = ""
 my_temp_int = my_int
 
 while(my_temp_int != 0):
     bin_str += str(my_temp_int%2)
     my_temp_int //= 2
+else:
+    if my_int == 0:
+        bin_str = "0"
     
 bin_str = bin_str[::-1]
 
