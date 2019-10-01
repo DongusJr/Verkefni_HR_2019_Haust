@@ -1,53 +1,58 @@
 # Functions
 
-def print_min_max(year_index):
-    ''' Print the maximum and minimum for certain year'''
-    # Save the min and max population for the states
-    min_state = [float("inf"), None]  # Index 0: population, Index 1: name of state
-    max_state = [float("-inf"), None]
-    # Find min and max
-    for i in range(1, len(pop_list)):
-        if pop_list[i][year_index] > max_state[0]:
-            max_state[0] = pop_list[i][year_index]
-            max_state[1] = pop_list[i][0]
-        if pop_list[i][year_index] < min_state[0]:
-            min_state[0] = pop_list[i][year_index]
-            min_state[1] = pop_list[i][0]
-    
-    print("Minimum: ({}, '{}')\nMaximum: ({}, '{}')".format(min_state[0], min_state[1], max_state[0], max_state[1]))
-
-def get_input():
-    ''' Function that takes input and loops if you enter an invalid year'''
-    try:
-        year_input = int(input("Enter year: "))
-        if year_input in pop_list[0]:
-            for i in range(1,len(pop_list[0])):
-                if year_input == pop_list[0][i]:
-                    year_index = i  # Save the index of the year for calculations
-            print_min_max(year_index)  # Print
-        else:
-            raise # invalid int, get input again
-    except:  # For Value_error and integer out of place
+def get_year_index(year_lst):
+    ''' Function that request year and then returns the index of it in the text file'''
+    # Dont need try and except for this loop because all we compare are strings
+    year_input = input("Enter year: ")
+    if year_input in year_lst:
+        return year_lst.index(year_input)  # return the index of the year
+    else:
         print("Invalid year!")
-        get_input()  # Loop
+        return get_year_index(year_lst)  # If it is an invalid year
 
-# List of states and years, empty
-pop_list = []
+
+def make_list(file_input):
+    ''' Function that reads the given textfile and converts it to a list with population and state at a certain year'''
+    pop_year_lst = []
+    got_year_index = False  # Boolean for the get_year_index function
+    try:
+        with open(file_input) as file:  # Open, read then close the file
+            for line in file:
+                line_lst = line.strip().split()  # Remove whitespace and newlines
+
+                if not got_year_index:  #  If we don't know what year we want, then we get it
+                    year_index = get_year_index(line_lst) # The line_lst should look like: ["States", year1, year2, ...]
+                    got_year_index = True
+                    
+                else:
+                    if line_lst[1].isalpha():  # Fix the list if the state name is two words, i.e."New York"
+                        line_lst = fix_state_name(line_lst)
+                    pop_year_lst.append((int(line_lst[year_index]), line_lst[0]))  # Add the population and state as a tuple into the list
+
+        return pop_year_lst
+
+    except FileNotFoundError:
+        print("Filename {} not found!".format(file_input))
+        return None
+
+def print_min_max(pop_year_lst):
+    ''' Prints the minimum and maximum population from each state at a ceratain year '''
+    print("Minimum: {}\nMaximum: {}".format(min(pop_year_lst), max(pop_year_lst)))
+
+def fix_state_name(line_lst):
+    ''' Takes states names that are two words and combines them into one string '''
+    line_lst[0] = line_lst[0] + " " + line_lst[1]
+    line_lst.pop(1)  # Remove the second word, because it's in the way
+    return line_lst
+
+def main(file_input):
+    ''' The main function of this program '''
+    population_list = make_list(file_input)  # Population list looks like: [(a,b),(c,d),...]
+    if population_list != None:
+        print_min_max(population_list)
 
 #Main
 
-try:
-    input_file = input("Enter filename: ")
-    # Opens the file, adds it to inner_list, then adds into the later list for two dimentional list, then closes the file
-    with open(input_file, "r") as file:
-        for line in file:
-            inner_pop_list = line.strip().split()  # Remove whitespace and newline
-            if inner_pop_list[0].isalpha() and inner_pop_list[1].isalpha():
-                inner_pop_list[0] = inner_pop_list[0] + " " + inner_pop_list[1]  # If there are two word states i.e. New York, add them together
-                inner_pop_list.pop(1)  # Remove the later word because it's useless now
-            for i in range(1, len(inner_pop_list)):
-                inner_pop_list[i] = int(inner_pop_list[i])  # Indexes from 1-3 should be integers
-            pop_list.append(inner_pop_list)  # Two dimentional list
-        get_input() # Gets input, then prints
-except FileNotFoundError:
-    print("File name {} not found!".format(input_file))
+file_input = input("Enter filename: ")
+
+main(file_input)
