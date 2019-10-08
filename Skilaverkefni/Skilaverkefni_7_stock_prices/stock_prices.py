@@ -1,12 +1,11 @@
 DATE = 0
-ADJ_CLOSE = 1
-VOLUME = 2
+ADJ_CLOSE = 5
+VOLUME = 6
 
 def open_file(file_name):
     ''' A function that takes a filename from the user and returns the file object '''
     try:
-        file_obj = open(file_name, "r")
-        return file_obj
+        return open(file_name, "r")
     except FileNotFoundError:
         print("Filename {} not found!".format(file_name))
         return None
@@ -20,13 +19,12 @@ def get_data_list(file_obj):
             is_first_line = False
             continue
         line = line.strip().split(",")
-        inner_list = [line[0]] + line[-2:]  # The innerlist will contain date, adj close and volume
-        data_list.append(inner_list)
+        data_list.append(line)  # Add the inner list to data_list
 
     return data_list  # Two dimentional list
 
 def get_monthly_averages(data_list):
-    ''' A function that takes in a list with [date, adj close, volume] and returns average price for each month '''
+    ''' A function that takes in a list of data and returns average price for each month '''
     monthly_averages_list = []
     year_and_month = data_list[0][DATE][:7]  # Save the first month, the string will look like "xxxx-xx", used for comparison
     price_sum = 0  # sum of Volume*(Adj Close)
@@ -79,7 +77,7 @@ def main():
     file_obj = open_file(file_input)
     if file_obj:
         data_list = get_data_list(file_obj)
-        monthly_averages_list = get_monthly_averages(data_list)
+        monthly_averages_list = get_monthly_averages(data_list) 
         max_price_tuple = get_max_price(data_list)
         print_info(monthly_averages_list, max_price_tuple)
         file_obj.close()
