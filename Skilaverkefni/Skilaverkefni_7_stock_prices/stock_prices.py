@@ -66,7 +66,7 @@ def get_max_price(data_list):
 def print_info(monthly_averages_list, max_price_tuple):
     ''' Function that prints out average price for each month and the maximum price '''
     max_day, max_price = max_price_tuple
-    print("{:<10}{:>7}".format("Month", "Price"))
+    print("{:<2}{:>7}".format("Month", "Price"))
     for month, price in monthly_averages_list:
         print("{:<10}{:>7.2f}".format(month, price))
     print("Highest price {:.2f} on day {}".format(max_price, max_day))

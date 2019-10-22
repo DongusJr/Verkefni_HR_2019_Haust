@@ -8,6 +8,9 @@ Y = 1
 coin = 0
 # Functions
 
+def reset(coin = 0, x = 1, y = 1):
+    return coin, x, y
+
 def lever_pull(coin):
     get_inp = input("Pull a lever (y/n): ").lower()
     if get_inp == "y":
@@ -110,4 +113,9 @@ while True:  # The main loop
         coin = lever_pull(coin) 
     if X == 3 and Y == 1:  # If the player is on tile (3,1), then you win
         print("Victory! Total coins {}.".format(coin))
-        break
+        continue_str = input("Play again (y/n): ").lower()
+        if continue_str == "y":
+            coin, X, Y = reset()
+            continue
+        else:
+            break

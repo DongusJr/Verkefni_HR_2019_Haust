@@ -1,3 +1,4 @@
+import random
 # Variables
 NORTH = "n"
 SOUTH = "s"
@@ -6,10 +7,17 @@ WEST = "w"
 X = 1
 Y = 1
 coin = 0
+valid_moves = 0
+yesno_list = ["y","n"]
+direction_list =["n","e","s","w"]
 # Functions
 
+def reset(coin = 0, x = 1, y = 1):
+    return coin, x, y
+
 def lever_pull(coin):
-    get_inp = input("Pull a lever (y/n): ").lower()
+    get_inp = random.choice(yesno_list)
+    print("Pull a lever (y/n): {}".format(get_inp))
     if get_inp == "y":
         coin += 1
         print("You received 1 coin, your total is now {}.".format(coin))
@@ -92,14 +100,18 @@ def move_player(x, y, move):
         x += 1
     return x, y
 
-#TODO:
-# Ask for input and save it
+# Main
+rand_seed = int(input("Input seed: "))
+random.seed(rand_seed)
+
 while True:  # The main loop
     n,e,s,w,count = move_options(X,Y)  # Assign booleans and count from possible direction options
     while True:
+        valid_moves += 1
         print_options(n,e,s,w,count)       # Print the options
         # Get the input, if the input matches the boolean of the direction then break out, else ask for the input again
-        input_str = input("Direction: ").lower()
+        input_str = random.choice(direction_list)
+        print("Direction: {}".format(input_str))
         if((input_str == NORTH and n) or (input_str == EAST and e) or (input_str == SOUTH and s) or (input_str == WEST and w)):
             break
         else:
@@ -109,5 +121,10 @@ while True:  # The main loop
     if Y == 2 or (X == 2 and Y == 3):
         coin = lever_pull(coin) 
     if X == 3 and Y == 1:  # If the player is on tile (3,1), then you win
-        print("Victory! Total coins {}.".format(coin))
-        break
+        print("Victory! Total coins {}. Moves {}.".format(coin, valid_moves))
+        continue_str = input("Play again (y/n): ")
+        if continue_str == "y":
+            coin, X, Y = reset()
+            continue
+        else:
+            break
